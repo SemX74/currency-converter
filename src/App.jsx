@@ -4,14 +4,16 @@ import "./Style/App.css";
 
 function App() {
   //Fetched data
-  const [eur, setEur] = useState({});
-  const [usd, setUsd] = useState({});
+  const uah = '1';
+  const [eur, setEur] = useState('');
+  const [usd, setUsd] = useState('');
+  const [date, setDate] = useState('');
   //inputs
-  const [from, setFrom] = useState(null);
-  const [to, setTo] = useState(null);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   //options
-  const [fromOption, setFromOption] = useState('UAH');
-  const [toOption, setToOption] = useState('USD');
+  const [fromOption, setFromOption] = useState(uah);
+  const [toOption, setToOption] = useState(uah);
   useEffect(() => {
     fetchWithFallback([
     "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/eur/uah.min.json",
@@ -19,119 +21,60 @@ function App() {
     "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/eur/uah.json",
     "https://raw.githubusercontent.com/fawazahmed0/currency-api/1/latest/currencies/eur/uah.min.json",
     "https://raw.githubusercontent.com/fawazahmed0/currency-api/1/latest/currencies/eur/uah.json"
-    ]).then(res => res.json()).then(data => setEur(data))
+    ]).then(res => res.json()).then(data => setEur(data.uah)).then(data => setDate(data.date))
     fetchWithFallback([
       "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/uah.min.json",
       "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/uah.min.json",
       "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/uah.json",
       "https://raw.githubusercontent.com/fawazahmed0/currency-api/1/latest/currencies/usd/uah.min.json",
       "https://raw.githubusercontent.com/fawazahmed0/currency-api/1/latest/currencies/usd/uah.json"
-      ]).then(res => res.json()).then(data => setUsd(data))
+      ]).then(res => res.json()).then(data => setUsd(data.uah))
   }, []);
 
   const handleFrom = ({ target }) =>{
     setFrom(target.value)
-    if(fromOption =='USD'){
-      if(toOption ==='USD'){
-        setTo(target.value)
-      }
-      if(toOption ==='UAH'){
-        setTo(target.value * usd.uah)
-      }
-      if(toOption ==='EUR'){
-        setTo(target.value * (usd.uah / eur.uah))
-      }
-    }
-    if(fromOption =='UAH'){
-      setTo(target.value)
-      if(toOption ==='USD'){
-        setTo(target.value * usd.uah)
-      }
-      if(toOption ==='EUR'){
-        setTo(target.value * eur.uah)
-      }
-    }
-    if(fromOption ==='EUR'){
-      if(toOption ==='EUR'){
-        setTo(target.value)
-      }
-      if(toOption ==='UAH'){
-        setTo(target.value * eur.uah)
-      }
-      if(toOption ==='USD'){
-        setTo(target.value * (eur.uah / usd.uah))
-      }
-    }
+    setTo(String((target.value * (fromOption / toOption).toFixed(3))))
   }
   const handleTo = ({ target }) =>{
     setTo(target.value)
-    if(toOption ==='USD'){
-      if(fromOption==='UAH'){
-        setFrom(target.value * usd.uah)
-      }
-      if(fromOption==='USD'){
-        setFrom(target.value)
-      }
-      if(fromOption==='EUR'){
-        setFrom(target.value * (usd.uah / eur.uah))
-      }
-    }
-    if(toOption ==='UAH'){
-      if(fromOption==='UAH'){
-        setFrom(target.value)
-      }
-      if(fromOption==='USD'){
-        setFrom(target.value / usd.uah)
-      }
-      if(fromOption==='EUR'){
-        setFrom(target.value / eur.uah)
-      }
-    }
-    if(toOption ==='EUR'){
-      if(fromOption==='UAH'){
-        setFrom(target.value * eur.uah)
-      }
-      if(fromOption==='USD'){
-        setFrom(target.value * (eur.uah / usd.uah))
-      }
-      if(fromOption==='EUR'){
-        setFrom(target.value)
-      }
-    }
+    setFrom(String((target.value * (toOption / fromOption)).toFixed(3)))
   }
   const handleFromOption = ({ target }) =>{
-    setFromOption(target.value)
-    
+    setTo(String((parseFloat(from) * (parseFloat(target.value) / parseFloat(toOption))).toFixed(3)))
+    setFromOption(target.value);
   }
   const handleToOption = ({ target }) =>{
+    setTo(String((parseFloat(from) * (fromOption / target.value)).toFixed(3)))
     setToOption(target.value)
+    
   }
   return (
     <div className="App">
         <header className="App-header">
-          <div className='Header-Currency'><span> USD: ${usd.uah} </span></div>
-          <div className='Header-Currency'><span> Info by: {usd.date}</span></div>
-          <div className='Header-Currency'><span> EUR: €{eur.uah}</span></div>
+          <div className='Header-Currency'><span> USD: ${usd} </span></div>
+          <div className='Header-Currency'><span> Info by: {date}</span></div>
+          <div className='Header-Currency'><span> EUR: €{eur}</span></div>
         </header>
       <div className="container">
         <div className='App-wrapper'>
           <h1 className="Title">Currency Converter</h1>
           <span style={{color:'white'}}>*after changing the currency you should change the input value too</span>
+          <span>From:{typeof from} {from}|to:{typeof to} {to}|FromOpt:{typeof fromOption} {fromOption} ToOpt:{typeof toOption} {toOption}; </span>
           <div className="Inputs">
             <input placeholder='0' value={from} onChange={handleFrom} type="number" />
             <h1>TO</h1>
-            <input placeholder='0'  value={to} onChange={handleTo} type="number" />
+            <input placeholder='0' value={to} onChange={handleTo} type="number" />
           </div>
           <div className="Selections">
             <select value={fromOption} onChange={handleFromOption} name="" id="">
-              <option value="UAH">UAH</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value={uah}>UAH</option>
+              <option value={usd}>USD</option>
+              <option value={eur}>EUR</option>
             </select>
             <select value={toOption} onChange={handleToOption} name="" id="">
-              <option value="UAH">UAH</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value={uah}>UAH</option>
+              <option value={usd}>USD</option>
+              <option value={eur}>EUR</option>
             </select>
           </div>
         </div>

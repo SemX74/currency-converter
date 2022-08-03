@@ -58,8 +58,6 @@ function App() {
       <div className="container">
         <div className='App-wrapper'>
           <h1 className="Title">Currency Converter</h1>
-          <span style={{color:'white'}}>*after changing the currency you should change the input value too</span>
-          <span>From:{typeof from} {from}|to:{typeof to} {to}|FromOpt:{typeof fromOption} {fromOption} ToOpt:{typeof toOption} {toOption}; </span>
           <div className="Inputs">
             <input placeholder='0' value={from} onChange={handleFrom} type="number" />
             <h1>TO</h1>
